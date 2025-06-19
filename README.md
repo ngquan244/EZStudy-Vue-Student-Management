@@ -1,5 +1,25 @@
-# Vue 3 + Vite
+# Vue Student Management v1
+## Tiến độ: Hoàn thành bài 1.
+## Chức năng hiện tại:
+- Hiển thị danh sách học sinh.
+- Filter danh sách theo lớp.
+- Lưu trữ trong localstorage.
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Công nghệ sử dụng:
+- Vue3
+- Vite
+## Cài đặt và chạy dự án
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+1. **Clone dự án**:
+   ```bash
+   git clone https://github.com/ngquan244/EZStudy-Vue-Student-Management.git
+
+2. **Cài Dependencies**:
+   ```bash
+   cd EZStudy-Vue-Student-Management
+   npm install
+
+3. **Khởi chạy**:
+   ```bash
+   npm run dev
+
