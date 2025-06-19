@@ -1,5 +1,5 @@
 <script setup>
-// Vue Imports
+// Import Components
 // AddStudent and EditStudent imported in StudentList
 import { ref, onMounted, watch, computed } from 'vue'
 import StudentList from './components/StudentList.vue'
@@ -24,6 +24,7 @@ const students = ref([])
 const currentPage = ref(1)
 
 // Handle paginating logic 
+// Filtering before paginating list of student
 const filteredStudents = computed(() => {
   if (selectedClass.value === 'all') return students.value
   if (selectedClass.value === '11' || selectedClass.value === '12') {
