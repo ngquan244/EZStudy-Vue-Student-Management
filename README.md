@@ -1,11 +1,11 @@
 # Vue Student Management v1
-## Tiến độ: Hoàn thành bài 1
-## Chức năng hiện tại
-- Hiển thị danh sách học sinh
+## Tiến độ: Hoàn thành bài 1.
+## Chức năng hiện tại:
+- Hiển thị danh sách học sinh.
 - Filter danh sách theo lớp.
-- Lưu trữ trong localstorage
+- Lưu trữ trong localstorage.
 
-## Công nghệ sử dụng
+## Công nghệ sử dụng:
 - Vue3
 - Vite
 ## Cài đặt và chạy dự án
