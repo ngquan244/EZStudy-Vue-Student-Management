@@ -39,6 +39,7 @@ function saveStudent() {
     id: Date.now(),
     name: name.value,
     age: age.toString(),
+    birthDate: birthDate.value,
     class: selectedClass.value
   }
 
