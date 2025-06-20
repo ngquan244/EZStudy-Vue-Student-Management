@@ -20,14 +20,31 @@ const editingIndex = ref(-1)
 const currentPage = ref(1)
 const classesPerPage = 5
 
-// LifeCyle Hook
+// Default classes
+const defaultClasses = [
+  { name: '11A', grade: 'Lớp 11' },
+  { name: '11B', grade: 'Lớp 11' },
+  { name: '12A', grade: 'Lớp 12' },
+  { name: '12B', grade: 'Lớp 12' }
+]
+
+// LifeCyle Hookss
 // Load Classes from localStorage on component mount
+// If there are no classes available, set default classes
 onMounted(() => {
   const stored = localStorage.getItem(STORAGE_KEY)
   try {
-    classes.value = stored ? JSON.parse(stored) : []
+    const loadedClasses = stored ? JSON.parse(stored) : []
+
+    if (!loadedClasses || loadedClasses.length === 0) {
+      classes.value = defaultClasses
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(classes.value))
+    } else {
+      classes.value = loadedClasses
+    }
   } catch {
-    classes.value = []
+    classes.value = defaultClasses
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(classes.value))
   }
 })
 
@@ -37,22 +54,14 @@ watch(classes, (newVal) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
 }, { deep: true })
 
-// Sort classes by grade (by priority 11-->12)
-const sortedClasses = computed(() => {
-  return [...classes.value].sort((a, b) => {
-    const getPriority = grade => grade === 'Lớp 11' ? 0 : 1
-    return getPriority(a.grade) - getPriority(b.grade)
-  })
-})
-
 // Handle paginating logic functions 
 const paginatedClasses = computed(() => {
   const start = (currentPage.value - 1) * classesPerPage
-  return sortedClasses.value.slice(start, start + classesPerPage)
+  return classes.value.slice(start, start + classesPerPage)
 })
 
 const totalPages = computed(() => {
-  return Math.ceil(sortedClasses.value.length / classesPerPage)
+  return Math.ceil(classes.value.length / classesPerPage)
 })
 
 function goToPage(page) {
@@ -64,25 +73,48 @@ function goToPage(page) {
 // Actions with classlist
 //  Add Class, Delete Class,Edit Class
 function addClass(newClass) {
-  if (classes.value.some(c => c.name === newClass.name)) {
-    alert('Lớp đã tồn tại!')
+  const forbiddenNames = ['11', '12'];
+
+  if (forbiddenNames.includes(newClass.name.trim())) {
+    alert('Tên lớp không được đặt là "11" hoặc "12". Vui lòng đặt tên khác.')
     return
   }
+
+  if (classes.value.some(c => c.name === newClass.name)) {
+    alert('Lớp đã tồn tại!')
+    return  
+  }
+
   classes.value.push(newClass)
 }
 
-function deleteClass(index) {
+function deleteClass(item) {
   const confirmDelete = confirm('Bạn có chắc chắn muốn xóa lớp này?')
   if (!confirmDelete) return
-  classes.value.splice(index, 1)
+
+  const index = classes.value.findIndex(c =>
+    c.name === item.name && c.grade === item.grade
+  )
+
+  if (index !== -1) {
+    classes.value.splice(index, 1)
+    currentPage.value = 1
+  }
 }
 
 // the different between editClass and updateClass
 // editClass after click "Sửa" button and before "Lưu"
-function editClass(index) {
-  editingIndex.value = index
-  editingClass.value = { ...classes.value[index] }
-  showEditForm.value = true
+function editClass(item) {
+  const index = classes.value.findIndex(c =>
+    c.name.trim().toLowerCase() === item.name.trim().toLowerCase() &&
+    c.grade.trim().toLowerCase() === item.grade.trim().toLowerCase()
+  )
+
+  if (index !== -1) {
+    editingIndex.value = index
+    editingClass.value = { ...classes.value[index] }
+    showEditForm.value = true
+  }
 }
 
 // after "Lưu"
@@ -92,7 +124,6 @@ function updateClass(updated) {
     showEditForm.value = false
   }
 }
-
 </script>
 
 <template>
@@ -120,17 +151,17 @@ function updateClass(updated) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in paginatedClasses" :key="index">
+        <tr v-for="(item, index) in paginatedClasses" :key="item.name + '-' + item.grade">
           <td>{{ (currentPage - 1) * classesPerPage + index + 1 }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.grade }}</td>
           <td>
-            <button class="edit-btn" @click="editClass(index)">Sửa</button>
-            <button class="delete-btn" @click="deleteClass(index)">Xóa</button>
+            <button class="edit-btn" @click="editClass(item)">Sửa</button>
+            <button class="delete-btn" @click="deleteClass(item)">Xóa</button>
           </td>
         </tr>
         <!-- Empty state message when no classes exist -->
-        <tr v-if="sortedClasses.length === 0">
+        <tr v-if="classes.length === 0">
           <td colspan="4" style="text-align:center;">Chưa có lớp nào</td>
         </tr>
       </tbody>
@@ -148,7 +179,6 @@ function updateClass(updated) {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 /* Unique styles different from common style in src/style.css */

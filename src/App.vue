@@ -127,6 +127,7 @@ function deleteStudent(id) {
   if (!confirmDelete) return
 
   students.value = students.value.filter(student => student.id !== id)
+  currentPage.value = 1
 }
 
 function closeForms() {
