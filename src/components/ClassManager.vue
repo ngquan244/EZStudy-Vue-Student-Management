@@ -20,30 +20,21 @@ const editingIndex = ref(-1)
 const currentPage = ref(1)
 const classesPerPage = 5
 
-// Default classes
-const defaultClasses = [
-  { name: '11A', grade: 'Lớp 11' },
-  { name: '11B', grade: 'Lớp 11' },
-  { name: '12A', grade: 'Lớp 12' },
-  { name: '12B', grade: 'Lớp 12' }
-]
-
 // LifeCyle Hookss
 // Load Classes from localStorage on component mount
-// If there are no classes available, set default classes
 onMounted(() => {
   const stored = localStorage.getItem(STORAGE_KEY)
   try {
     const loadedClasses = stored ? JSON.parse(stored) : []
 
     if (!loadedClasses || loadedClasses.length === 0) {
-      classes.value = defaultClasses
+      classes.value = []
       localStorage.setItem(STORAGE_KEY, JSON.stringify(classes.value))
     } else {
       classes.value = loadedClasses
     }
   } catch {
-    classes.value = defaultClasses
+    classes.value = []
     localStorage.setItem(STORAGE_KEY, JSON.stringify(classes.value))
   }
 })
