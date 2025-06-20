@@ -5,7 +5,7 @@
 - Hiển thị danh sách học sinh.
 - Filter danh sách theo lớp.
 - Lưu trữ trong localstorage.
-- Thêm học sinh vào danh sách, xóa học sinh trong danh sách
+- Thêm học sinh vào danh sách, xóa học sinh trong danh sách, sửa thông tin học sinh
 
 ## Công nghệ sử dụng:
 - Vue3
