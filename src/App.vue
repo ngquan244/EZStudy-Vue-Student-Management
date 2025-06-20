@@ -54,7 +54,7 @@ function goToPage(page) {
 onMounted(() => {
   const stored = localStorage.getItem(STORAGE_KEY)
   try {
-    students.value = stored ? JSON.parse(stored) : getDefaultStudents()
+    students.value = stored ? JSON.parse(stored) : []
   } catch {
     students.value = getDefaultStudents()
   }
@@ -66,24 +66,10 @@ watch(students, (newVal) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
 }, { deep: true })
 
-
-// Sample data for demo purposes
-// Will be replaced with real data later
-function getDefaultStudents() {
-  return [
-    { id: 1, name: 'Doraemon', age: '13', class: '11A' },
-    { id: 2, name: 'Nobita', age: '13', class: '11B' },
-    { id: 3, name: 'Shizuka', age: '13', class: '11A' },
-    { id: 4, name: 'Chaien', age: '13', class: '11A' },
-    { id: 5, name: 'Suneo', age: '13', class: '11A' },
-    { id: 6, name: 'Nobisuke', age: '14', class: '12B' },
-    { id: 7, name: 'Dorami', age: '14', class: '12A' },
-    { id: 8, name: 'Nobi Tamako', age: '14', class: '12B' },
-    { id: 9, name: 'Jaiko', age: '13', class: '11A' },
-    { id: 10, name: 'Tachibana', age: '14', class: '12B' },
-    { id: 11, name: 'Riruru', age: '14', class: '12A' }
-  ]
-}
+// Watcher - back to page 1 after filtering
+watch(selectedClass, () => {
+  currentPage.value = 1
+})
 
 // Navigation Function
 function switchTab(tab) {
@@ -97,16 +83,24 @@ function addStudent() {
   showEditForm.value = false
 }
 
+function handleAddStudent(student) {
+  students.value.push(student)
+  showAddForm.value = false
+}
+
 function editStudent(student) {
   editingStudent.value = student
   showAddForm.value = false
   showEditForm.value = true
 }
 
-// TODO: Implement actual delete functionality
-// Currently just shows message
+// Delete student + update local storage(watcher handled update already)
+// Confirm before delete
 function deleteStudent(id) {
-  alert('Chức năng xóa sẽ được cập nhật sau.')
+  const confirmDelete = confirm('Bạn có chắc chắn muốn xóa học sinh này không?')
+  if (!confirmDelete) return
+
+  students.value = students.value.filter(student => student.id !== id)
 }
 
 function closeForms() {
@@ -138,12 +132,16 @@ function closeForms() {
     :current-page="currentPage"
     :total-pages="totalPages"
     :selected-class="selectedClass"
-    @update:selected-class="(val) => selectedClass = val"
+    @update:selected-class="(val) => {
+      selectedClass = val
+      currentPage.value = 1
+    }"
     @add="addStudent"
     @edit="editStudent"
     @delete="deleteStudent"
     @close="closeForms"
     @change-page="goToPage"
+    @add-student="handleAddStudent"
   />
 
   <ClassManager v-else />

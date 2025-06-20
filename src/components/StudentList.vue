@@ -41,7 +41,12 @@ function emitClose() {
     </div>
 
     <!-- Edit form, Add Form - Future Update -->
-    <AddStudent v-if="showAddForm" @close="emitClose" />
+    <AddStudent
+      v-if="showAddForm"
+      @close="emitClose"
+      @add-student="student => emit('add-student', student)"
+    />
+
     <EditStudent
       v-else-if="showEditForm"
       :student="editingStudent"
