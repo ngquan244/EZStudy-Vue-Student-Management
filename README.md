@@ -1,6 +1,7 @@
 # Vue Student Management
 ## Tiến độ: Hoàn thành bài 2.
 (Sẽ có các branchs để lưu lại tiến độ mỗi khi hoàn thành 1 bài để tiện quan sát)
+## Tiến độ tiếp theo: Chia lại files, tuân thủ yêu cầu kĩ thuật
 ## Chức năng hiện tại:
 - Hiển thị danh sách học sinh.
 - Filter danh sách theo lớp.
