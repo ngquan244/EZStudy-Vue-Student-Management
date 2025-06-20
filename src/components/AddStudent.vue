@@ -1,6 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 
+// Props from parent
+const props = defineProps({
+  classList: Array
+})
+
 // Events to parent
 const emit = defineEmits(['close', 'add-student'])
 
@@ -63,14 +68,16 @@ function saveStudent() {
       <input v-model="birthDate" type="date" :max="today" />
     </div>
 
+     <!-- new static dropdown instead of hardcore -->
     <div class="form-row">
       <label>Chọn lớp:</label>
       <select v-model="selectedClass">
-        <option value="11A">Lớp 11A</option>
-        <option value="11B">Lớp 11B</option>
-        <option value="12A">Lớp 12A</option>
-        <option value="12B">Lớp 12B</option>
-      </select>
+        <option
+          v-for="cls in classList"
+          :key="cls.name"
+          :value="cls.name"
+        >{{ cls.name }}</option>
+        </select>
     </div>
 
     <div class="buttons">

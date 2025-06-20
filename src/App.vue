@@ -6,12 +6,12 @@ import StudentList from './components/StudentList.vue'
 import ClassManager from './components/ClassManager.vue'
 
 // Configuration Constants 
-// NOTE: Key for Local Storaga & pagination limit
+// NOTE: Key for Local Storage of students & pagination limit
 const STORAGE_KEY = 'ezstudy-students'
 
 const studentsPerPage = 5
 
-//UI State
+// Reactive UI State
 const activeTab = ref('student')
 const showAddForm = ref(false)
 const showEditForm = ref(false)
@@ -22,14 +22,25 @@ const selectedClass = ref('all')
 // Array students loaded from localStorage - main array & based page index is 1 
 const students = ref([])
 const currentPage = ref(1)
+const classList = ref([])
 
-// Handle paginating logic 
+// Handle paginating and filtering logic 
 // Filtering before paginating list of student
+// Filtering by grade 11, 12 and filtering by class 11X 12X
 const filteredStudents = computed(() => {
   if (selectedClass.value === 'all') return students.value
+
+  const classListRaw = localStorage.getItem('ezstudy-classes')
+  const allClasses = classListRaw ? JSON.parse(classListRaw) : []
+
   if (selectedClass.value === '11' || selectedClass.value === '12') {
-    return students.value.filter(s => s.class.startsWith(selectedClass.value))
+    const groupName = 'Lớp ' + selectedClass.value
+    const matchingClassNames = allClasses
+      .filter(c => c.grade === groupName)
+      .map(c => c.name)
+    return students.value.filter(s => matchingClassNames.includes(s.class))
   }
+
   return students.value.filter(s => s.class === selectedClass.value)
 })
 
@@ -52,11 +63,18 @@ function goToPage(page) {
 // Load data from localStorage on component mount
 // Fallback to default data if localStorage is corrupted
 onMounted(() => {
-  const stored = localStorage.getItem(STORAGE_KEY)
+  const storedStudents = localStorage.getItem(STORAGE_KEY)
   try {
-    students.value = stored ? JSON.parse(stored) : []
+    students.value = storedStudents ? JSON.parse(storedStudents) : []
   } catch {
-    students.value = getDefaultStudents()
+    students.value = []
+  }
+
+  const storedClasses = localStorage.getItem('ezstudy-classes')
+  try {
+    classList.value = storedClasses ? JSON.parse(storedClasses) : []
+  } catch {
+    classList.value = []
   }
 })
 
@@ -140,6 +158,7 @@ function closeForms() {
     :current-page="currentPage"
     :total-pages="totalPages"
     :selected-class="selectedClass"
+    :class-list="classList"
     @update:selected-class="(val) => {
       selectedClass = val
       currentPage.value = 1

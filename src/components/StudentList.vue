@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 // Import child components
 import AddStudent from './AddStudent.vue'
 import EditStudent from './EditStudent.vue'
@@ -12,6 +14,7 @@ const props = defineProps({
   currentPage: Number,
   totalPages: Number,
   selectedClass: String,
+  classList: Array
 })
 
 // Events to parent
@@ -23,6 +26,23 @@ const emit = defineEmits([
 function emitClose() {
   emit('close')
 }
+
+// Handle class options for filtering dropdown options
+const grades = ['Lớp 11', 'Lớp 12']
+
+const groupedClassOptions = computed(() => {
+  const result = {
+    'Lớp 11': [],
+    'Lớp 12': []
+  }
+  for (const c of props.classList) {
+    if (result[c.grade]) {
+      result[c.grade].push(c.name)
+    }
+  }
+  return result
+})
+
 </script>
 
 <template>
@@ -32,11 +52,14 @@ function emitClose() {
       <select :value="selectedClass" @change="e => emit('update:selected-class', e.target.value)">
         <option value="all">Tất cả các lớp</option>
         <option value="11">Lớp 11</option>
-        <option value="11A">-- Lớp 11A</option>
-        <option value="11B">-- Lớp 11B</option>
         <option value="12">Lớp 12</option>
-        <option value="12A">-- Lớp 12A</option>
-        <option value="12B">-- Lớp 12B</option>
+        <option
+          v-for="cls in props.classList"
+          :key="cls.name"
+          :value="cls.name"
+        >
+          -- {{ cls.name }}
+        </option>
       </select>
     </div>
 
@@ -45,6 +68,7 @@ function emitClose() {
       v-if="showAddForm"
       @close="emitClose"
       @add-student="student => emit('add-student', student)"
+      :class-list="classList"
     />
 
     <EditStudent
@@ -52,6 +76,7 @@ function emitClose() {
       :student="editingStudent"
       @close="emitClose"
       @edit-student="student => emit('edit-student', student)"
+      :class-list="classList"
     />
 
     <!-- Table for student list -->

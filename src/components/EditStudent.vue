@@ -3,7 +3,8 @@ import { ref, watch } from 'vue'
 
 // Props from parent
 const props = defineProps({
-  student: Object
+  student: Object,
+  classList: Array
 })
 
 // Events to parent
@@ -76,13 +77,15 @@ function saveEdits() {
       <input v-model="birthDate" type="date" :max="today" />
     </div>
 
+    <!-- new static dropdown instead of hardcore -->
     <div class="form-row">
       <label>Chọn lớp:</label>
       <select v-model="selectedClass">
-        <option value="11A">Lớp 11A</option>
-        <option value="11B">Lớp 11B</option>
-        <option value="12A">Lớp 12A</option>
-        <option value="12B">Lớp 12B</option>
+        <option
+          v-for="cls in classList"
+          :key="cls.name"
+          :value="cls.name"
+        >{{ cls.name }}</option>
       </select>
     </div>
 
@@ -94,6 +97,7 @@ function saveEdits() {
 </template>
 
 <style scoped>
+/* Unique styles different from common style in src/style.css */
 .form-container {
   max-width: 400px;
   width: 350px;
