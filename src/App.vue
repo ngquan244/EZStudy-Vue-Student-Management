@@ -88,6 +88,14 @@ function handleAddStudent(student) {
   showAddForm.value = false
 }
 
+function handleEditStudent(updatedStudent) {
+  const index = students.value.findIndex(s => s.id === updatedStudent.id)
+  if (index !== -1) {
+    students.value.splice(index, 1, updatedStudent) 
+    showEditForm.value = false
+  }
+}
+
 function editStudent(student) {
   editingStudent.value = student
   showAddForm.value = false
@@ -142,6 +150,7 @@ function closeForms() {
     @close="closeForms"
     @change-page="goToPage"
     @add-student="handleAddStudent"
+    @edit-student="handleEditStudent"
   />
 
   <ClassManager v-else />

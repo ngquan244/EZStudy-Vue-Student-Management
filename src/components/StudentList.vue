@@ -51,6 +51,7 @@ function emitClose() {
       v-else-if="showEditForm"
       :student="editingStudent"
       @close="emitClose"
+      @edit-student="student => emit('edit-student', student)"
     />
 
     <!-- Table for student list -->
