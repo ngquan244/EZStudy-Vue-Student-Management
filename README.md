@@ -1,14 +1,14 @@
 # Vue Student Management
-## Tiến độ: Hoàn thành bài 2.
+## Tiến độ: Hoàn thành bài 3 90%.
 (Sẽ có các branchs để lưu lại tiến độ mỗi khi hoàn thành 1 bài để tiện quan sát)
-## Tiến độ tiếp theo: Chia lại files, tuân thủ yêu cầu kĩ thuật
+## Tiến độ tiếp theo: Chỉnh sửa để tuân thủ yêu cầu kĩ thuật
 ## Chức năng hiện tại:
 - Hiển thị danh sách học sinh.
 - Filter danh sách theo lớp.
 - Lưu trữ trong localstorage.
 - Thêm học sinh vào danh sách, xóa học sinh trong danh sách, sửa thông tin học sinh
 - Quản lý lớp với các chức năng thêm lớp, xóa lớp, sửa lớp 
-
+- Đã chia file để mỗi file không quá 50 dòng
 ## Công nghệ sử dụng:
 - Vue3
 - Vite
