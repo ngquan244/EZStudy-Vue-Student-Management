@@ -1,0 +1,41 @@
+.formContainer {
+  max-width: 400px;
+  width: 350px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f2f2f2;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.formRow label {
+  width: 80px;
+  font-weight: bold;
+}
+
+.formRow input,
+.formRow select {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #000;
+  border-radius: 6px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.buttons button:first-of-type {
+  background-color: #04AA6D;
+  color: white;
+}
