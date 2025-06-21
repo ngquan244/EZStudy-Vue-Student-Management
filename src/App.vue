@@ -84,6 +84,13 @@ watch(students, (newVal) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
 }, { deep: true })
 
+// Watcher reloadClassList whenever switch tab
+watch(activeTab, (newTab) => {
+  if (newTab === 'student') {
+    reloadClassList()
+  }
+})
+
 // Watcher - back to page 1 after filtering
 watch(selectedClass, () => {
   currentPage.value = 1
@@ -134,6 +141,23 @@ function closeForms() {
   showAddForm.value = false
   showEditForm.value = false
 }
+
+// Reload classlist after anychange
+function reloadClassList() {
+  const stored = localStorage.getItem('ezstudy-classes')
+  try {
+    classList.value = stored ? JSON.parse(stored) : []
+  } catch {
+    classList.value = []
+  }
+  
+  if (
+    selectedClass.value !== 'all' &&
+    !classList.value.some(c => c.name === selectedClass.value)
+  ) {
+    selectedClass.value = 'all'
+  }
+}
 </script>
 
 <template>
@@ -173,7 +197,7 @@ function closeForms() {
     @edit-student="handleEditStudent"
   />
 
-  <ClassManager v-else />
+  <ClassManager v-else @update-classes="reloadClassList" />
 </template>
 
 <style scoped>

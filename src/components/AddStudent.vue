@@ -27,7 +27,8 @@ function calculateAge(birthDateStr) {
 // Required full filled data
 // Make sure Birth Date < Today
 function saveStudent() {
-  if (!name.value || !birthDate.value || !selectedClass.value) {
+  const trimmedName = name.value.trim()
+  if (!trimmedName || !birthDate.value || !selectedClass.value) {
     alert('Vui lòng điền đầy đủ thông tin!')
     return
   }
