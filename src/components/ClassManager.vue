@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 
+// Events to parent
+const emit = defineEmits(['update-classes'])
+
 // Import child components
 import AddClass from './AddClass.vue'
 import EditClass from './EditClass.vue'
@@ -77,6 +80,7 @@ function addClass(newClass) {
   }
 
   classes.value.push(newClass)
+  emit('update-classes')
 }
 
 function deleteClass(item) {
@@ -91,6 +95,7 @@ function deleteClass(item) {
     classes.value.splice(index, 1)
     currentPage.value = 1
   }
+  emit('update-classes')
 }
 
 // the different between editClass and updateClass
@@ -114,6 +119,7 @@ function updateClass(updated) {
     classes.value.splice(editingIndex.value, 1, updated)
     showEditForm.value = false
   }
+  emit('update-classes')
 }
 </script>
 
