@@ -58,7 +58,7 @@ function saveStudent() {
   <!-- Add-Student Form with Name input, Birthdate Input and Class Selection -->
   <div class="form-container">
     <h2>Thêm Học Sinh</h2>
-    <p>(Tạo lớp mới và REFRESH nếu chưa có lớp)</p>
+    <p>(Tạo lớp mới nếu chưa có lớp)</p>
     <div class="form-row">
       <label>Họ và tên:</label>
       <input v-model="name" type="text" placeholder="Nhập họ tên" />
