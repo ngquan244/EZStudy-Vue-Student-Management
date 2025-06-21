@@ -1,3 +1,4 @@
+/* File cơ bản khởi đầu ngay từ đầu đã quá 50 dòng */
 @charset "UTF-8";
 
 :root {
@@ -91,3 +92,6 @@ button:disabled {
     background-color: #f0f0f0;
   }
 }
+
+
+

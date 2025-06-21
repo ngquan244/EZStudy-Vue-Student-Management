@@ -1,0 +1,19 @@
+.classManager {
+  margin-top: 16px;
+}
+
+.classTable {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.classTable th,
+.classTable td {
+  border: 1px solid black;
+  padding: 8px;
+  width: 150px;
+  text-align: center;
+}
+
