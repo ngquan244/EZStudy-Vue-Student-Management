@@ -1,6 +1,6 @@
 // Imports and states
 import { watch } from 'vue'
-import { students, activeTab, selectedClass } from './states'
+import { students, activeTab, selectedClass, currentPage } from './states'
 import { STORAGE_KEY } from './states'
 import { reloadClassList } from './lifecycle'
 
