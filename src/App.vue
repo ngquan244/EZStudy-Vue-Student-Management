@@ -3,7 +3,7 @@
 import styles from './AppStyle.module.css'
 import StudentList from './components/StudentList/StudentList.vue'
 import ClassManager from './components/ClassManager/ClassManager.vue'
-import { useAppLogic } from './composables/AppLogic.js'
+import { useAppLogic } from './composables/appLogic.js'
 
 // Destructure states and methods from hook
 const {

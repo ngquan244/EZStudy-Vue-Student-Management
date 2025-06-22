@@ -14,7 +14,7 @@ const props = defineProps({
 // Events to parent
 const emit = defineEmits(['close', 'add-student'])
 
-// New student attributes
+// New student attributes and methods from hook
 const {
   name,
   birthDate,
