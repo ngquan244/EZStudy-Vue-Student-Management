@@ -30,6 +30,11 @@ export default function useEditClass(props, emit) {
       alert('Vui lòng nhập tên lớp!')
       return
     }
+    
+    if (trimmed.length > 20) {
+      alert('Tên lớp không được vượt quá 20 ký tự!')
+      return
+    }
 
     emit('update-class', {
       ...props.classItem,

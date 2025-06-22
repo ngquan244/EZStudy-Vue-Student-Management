@@ -25,10 +25,17 @@ export default function useEditStudent(props, emit) {
     return currentYear - birthYear
   }
   
-  // Save edited student
+  // Save edited student, same requirements as AddStudent
   function saveEdits() {
+    const trimmed = name.value.trim()
+
     if (!name.value || !birthDate.value || !selectedClass.value) {
       alert('Vui lòng điền đầy đủ thông tin!')
+      return
+    }
+    
+    if (trimmed.length > 30) {
+      alert('Tên không được vượt quá 30 ký tự!')
       return
     }
 
@@ -59,4 +66,4 @@ export default function useEditStudent(props, emit) {
   }
 }
 
-// Chỉ khoảng 50 dòng nếu không tính comments
+// không tính comments chỉ khoảng hơn 50 dòng

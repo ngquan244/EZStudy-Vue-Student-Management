@@ -13,11 +13,17 @@ export default function useAddStudent(emit) {
     return currentYear - birthYear
   }
 
-  // Remove first and last space and make sure that birthdate < today
+  // Remove first and last space, make sure that birthdate < today, name < 30 digits
   function saveStudent() {
     const trimmed = name.value.trim()
+  
     if (!trimmed || !birthDate.value || !selectedClass.value) {
       alert('Vui lòng điền đầy đủ thông tin!')
+      return
+    }
+
+    if (trimmed.length > 30) {
+      alert('Tên không được vượt quá 30 ký tự!')
       return
     }
 
@@ -35,9 +41,9 @@ export default function useAddStudent(emit) {
       class: selectedClass.value
     }
 
-    emit('add-student', newStudent)
-    emit('close')
-  }
+  emit('add-student', newStudent)
+  emit('close')
+}
 
   return {
     name,
