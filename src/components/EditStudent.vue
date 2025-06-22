@@ -1,70 +1,115 @@
 <script setup>
-import { ref, watch } from 'vue'
+// Imports
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-// Props from parent
-const props = defineProps({
-  student: Object,
-  classList: Array
-})
+const route = useRoute()
+const router = useRouter()
 
-// Events to parent
-const emit = defineEmits(['close', 'edit-student'])
+// Route for student id
+const studentId = Number(route.params.id)
+const student = ref(null)
 
-// Reactive form - input and select box
+// Reactive refs
 const name = ref('')
 const birthDate = ref('')
-const selectedClass = ref('11A')
+const selectedClass = ref('')
 
-// Current date to compute age by birth date by the calculateAge below
+// Today for calculate age 
 const today = new Date().toISOString().split('T')[0]
 
+// Age calculator function use today and birthdate
 function calculateAge(birthDateStr) {
   const birthYear = new Date(birthDateStr).getFullYear()
   const currentYear = new Date().getFullYear()
   return currentYear - birthYear
 }
 
-// Watcher
-// Watch for changes in props and set the new value
-watch(() => props.student, (newVal) => {
-  if (newVal) {
-    name.value = newVal.name
-    selectedClass.value = newVal.class
-    birthDate.value = newVal.birthDate || '' 
-  }
-}, { immediate: true })
+const classList = ref([])
 
-// The same as saveStudent in AddStudent but edit the existing student instead
-// Required full filled data
-// Make sure Birth Date < Today
-function saveEdits() {
-  if (!name.value || !birthDate.value || !selectedClass.value) {
-    alert('Vui lòng điền đầy đủ thông tin!')
+// LifeCycle Hook load classes from storage - auto fill
+onMounted(() => {
+  const classData = localStorage.getItem('ezstudy-classes')
+  try {
+    classList.value = classData ? JSON.parse(classData) : []
+  } catch {
+    classList.value = []
+  }
+
+  const studentData = localStorage.getItem('ezstudy-students')
+  let students = []
+  try {
+    students = studentData ? JSON.parse(studentData) : []
+  } catch {
+    students = []
+  }
+
+  const found = students.find(s => s.id === studentId)
+  if (!found) {
+    alert('Không tìm thấy học sinh!')
+    router.push('/students')
     return
   }
 
+  student.value = found
+  name.value = found.name
+  birthDate.value = found.birthDate || ''
+  selectedClass.value = found.class
+})
+
+// Save function after edit student make sure that trimmedName <= 30 digits 
+function save() {
+  const trimmedName = name.value.trim()
+
+  if (!trimmedName || !birthDate.value || !selectedClass.value) {
+    alert('Vui lòng điền đầy đủ thông tin!')
+    return
+  }
+  
+  if (trimmedName.length > 30) {
+      alert('Tên không được vượt quá 30 ký tự!')
+      return
+  }
+
   if (birthDate.value > today) {
-    alert('Ngày sinh không thể lớn hơn hôm nay. Vui lòng nhập lại.')
+    alert('Ngày sinh không thể lớn hơn hôm nay.')
     birthDate.value = ''
     return
   }
 
-  const age = calculateAge(birthDate.value)
-
-  emit('edit-student', {
-    ...props.student,
+  const updatedStudent = {
+    ...student.value,
     name: name.value,
-    age: age.toString(),
     birthDate: birthDate.value,
+    age: calculateAge(birthDate.value).toString(),
     class: selectedClass.value
-  })
-  emit('close')
+  }
+
+  const data = localStorage.getItem('ezstudy-students')
+  let students = []
+  try {
+    students = data ? JSON.parse(data) : []
+  } catch {
+    students = []
+  }
+
+  const index = students.findIndex(s => s.id === studentId)
+  if (index !== -1) {
+    students[index] = updatedStudent
+    localStorage.setItem('ezstudy-students', JSON.stringify(students))
+  }
+
+  router.push('/students')
+}
+
+function cancel() {
+  router.push('/students')
 }
 </script>
 
 <template>
-  <!-- A copy of AddStudent Form interface -->
-  <div class="form-container">
+  <!-- Edit Student form includes  name input date input and class selector-->
+  <div class="form-container" v-if="student">
     <h2>Sửa Thông Tin Học Sinh</h2>
 
     <div class="form-row">
@@ -77,37 +122,36 @@ function saveEdits() {
       <input v-model="birthDate" type="date" :max="today" />
     </div>
 
-    <!-- new static dropdown instead of hardcore -->
     <div class="form-row">
       <label>Chọn lớp:</label>
       <select v-model="selectedClass">
-        <option
-          v-for="cls in classList"
-          :key="cls.name"
-          :value="cls.name"
-        >{{ cls.name }}</option>
+        <option v-for="cls in classList" :key="cls.name" :value="cls.name">
+          {{ cls.name }}
+        </option>
       </select>
     </div>
 
     <div class="buttons">
-      <button @click="saveEdits">Lưu</button>
-      <button @click="$emit('close')">Hủy</button>
+      <button @click="save">Lưu</button>
+      <button @click="cancel">Hủy</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Unique styles different from common style in src/style.css */
+/* style for both light and dark mode */
 .form-container {
   max-width: 400px;
   width: 350px;
   margin: 0 auto;
   padding: 20px;
-  background: #f2f2f2;
+  background: var(--form-bg);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  border: 1px solid var(--form-border);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .form-row {
@@ -119,15 +163,18 @@ function saveEdits() {
 .form-row label {
   width: 90px;
   font-weight: bold;
+  color: var(--label-color);
 }
 
 .form-row input,
 .form-row select {
   flex: 1;
   padding: 8px;
-  border: 1px solid #000;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
   box-sizing: border-box;
+  background-color: var(--form-bg);
+  color: var(--label-color);
 }
 
 .buttons {
@@ -138,7 +185,15 @@ function saveEdits() {
 }
 
 button:first-of-type {
-  background-color: #04AA6D;
-  color: white;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:first-of-type:hover {
+  filter: brightness(1.1);
 }
 </style>
