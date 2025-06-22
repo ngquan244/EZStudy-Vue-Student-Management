@@ -1,13 +1,14 @@
 <script setup>
+// Import child components, logics js and css modules
 import AddClass from '../AddClass/AddClass.vue'
 import EditClass from '../EditClass/EditClass.vue'
-import { useClassManager } from './useClassManager/useClassManager.js'
-import styles from './ClassManager.module.css'
-
 import ClassToolbar from './ClassToolbar.vue'
 import ClassTable from './ClassTable.vue'
 import ClassPagination from './ClassPagination.vue'
+import { useClassManager } from './useClassManager/useClassManager.js'
+import styles from './ClassManager.module.css'
 
+// States and methods from hook
 const {
   showAddForm,
   showEditForm,
@@ -25,6 +26,7 @@ const {
 </script>
 
 <template>
+  <!-- Class Manager Interface -->
   <div :class="styles.classManager">
     <h2 class="title">Quản Lý Lớp</h2>
 

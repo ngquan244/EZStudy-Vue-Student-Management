@@ -1,4 +1,5 @@
 <script setup>
+// Props from parent and Events to parent
 defineProps(['className', 'selectedGrade', 'today'])
 const emit = defineEmits(['update:className', 'update:selectedGrade', 'save', 'close'])
 

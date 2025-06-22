@@ -7,7 +7,7 @@ import styles from './AddStudentForm.module.css'
 
 <template>
   <!-- Name input text box -->
-  <div :class="styles['form-row']">
+  <div :class="styles.formRow">
     <label>Họ và tên:</label>
     <input
       :value="modelValue"

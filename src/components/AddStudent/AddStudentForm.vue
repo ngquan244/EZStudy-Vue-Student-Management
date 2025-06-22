@@ -17,7 +17,7 @@ defineProps([
 
 <template>
   <!-- Add Student Form interface include Name input, Birthdate input and class selection -->
-  <div :class="styles['form-container']">
+  <div :class="styles.formContainer">
     <h2>Thêm Học Sinh</h2>
     <p>(Tạo lớp mới nếu chưa có lớp)</p>
 

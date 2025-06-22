@@ -5,11 +5,14 @@ defineProps({
   classList: Array
 })
 const emit = defineEmits(['update:selectedClass'])
+
+// Import Css Modules
+import styles from './EditStudentForm.module.css'
 </script>
 
 <template>
   <!-- class selection static dropdown -->
-  <div class="form-row">
+  <div :class="styles.formRow">
     <label>Chọn lớp:</label>
     <select
       :value="selectedClass"

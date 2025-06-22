@@ -10,7 +10,7 @@ import styles from './AddStudentForm.module.css'
 
 <template>
   <!-- Birthdate input -->
-  <div :class="styles['form-row']">
+  <div :class="styles.formRow">
     <label>Ngày sinh:</label>
     <input
       :value="modelValue"

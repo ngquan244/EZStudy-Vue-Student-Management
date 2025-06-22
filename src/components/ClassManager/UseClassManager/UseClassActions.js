@@ -45,5 +45,11 @@ export function useClassActions(state) {
     }
   }
 
-  return { goToPage, addClass, deleteClass, editClass, updateClass }
+  return { 
+    goToPage,
+    addClass, 
+    deleteClass, 
+    editClass, 
+    updateClass 
+  }
 }

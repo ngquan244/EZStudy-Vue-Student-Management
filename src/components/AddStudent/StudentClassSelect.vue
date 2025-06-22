@@ -6,12 +6,14 @@ defineProps({
   classList: Array
 })
 defineEmits(['update:modelValue'])
+
+//Import CSS modules
 import styles from './AddStudentForm.module.css'
 </script>
 
 <template>
   <!-- Class Selection drop down -->
-  <div :class="styles['form-row']">
+  <div :class="styles.formRow">
     <label>Chọn lớp:</label>
     <select
       :value="modelValue"

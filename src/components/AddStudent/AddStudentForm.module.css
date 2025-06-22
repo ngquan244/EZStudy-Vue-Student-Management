@@ -1,4 +1,5 @@
-.form-container {
+/* Rename some styles cuz in JS, we can't use dot notation if the property name has '-' */
+.formContainer {
   max-width: 400px;
   width: 350px;
   margin: 0 auto;
@@ -10,20 +11,20 @@
   gap: 12px;
 }
 
-.form-row {
+.formRow {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.form-row label {
+.formRow label {
   width: 90px;
   max-width: 120px;
   font-weight: bold;
 }
 
-.form-row input,
-.form-row select {
+.formRow input,
+.formRow select {
   flex: 1;
   padding: 8px;
   border: 1px solid #000;

@@ -6,11 +6,14 @@ defineProps({
   max: String
 })
 const emit = defineEmits(['update:modelValue'])
+
+// Import Css Modules
+import styles from './EditStudentForm.module.css'
 </script>
 
 <template>
   <!-- Date Input  -->
-  <div class="form-row">
+  <div :class= "styles.formRow" >
     <label>{{ label }}</label>
     <input
       type="date"

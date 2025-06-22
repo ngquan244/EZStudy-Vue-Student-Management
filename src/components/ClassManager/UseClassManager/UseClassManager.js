@@ -1,4 +1,4 @@
-//Import logic js files
+//Import logical js files
 import { useClassState } from './UseClassState.js'
 import { useClassStorage } from './UseClassStorage.js'
 import { useClassActions } from './UseClassActions.js'

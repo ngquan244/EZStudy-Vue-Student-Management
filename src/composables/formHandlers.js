@@ -1,6 +1,7 @@
 // Import states
 import { showAddForm, showEditForm, editingStudent } from './states'
 
+// Form states control
 export function closeForms() {
   showAddForm.value = false
   showEditForm.value = false
