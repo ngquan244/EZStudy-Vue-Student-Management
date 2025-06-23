@@ -1,6 +1,5 @@
 <script setup>
-// Imports
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -10,47 +9,76 @@ const students = ref([])
 const classList = ref([])
 const selectedClass = ref('all')
 const currentPage = ref(1)
+const showSearch = ref(false)
+const searchName = ref('')
+const searchAge = ref('')
+const filteredStudents = ref([])
 
-// Configuration students per page
+// Configuration
 const studentsPerPage = 5
-
-// Storage keys
 const STORAGE_STUDENTS = 'ezstudy-students'
 const STORAGE_CLASSES = 'ezstudy-classes'
 
-// LifeCycle Hook load students data from storage
+// Load data
 onMounted(() => {
   const storedStudents = localStorage.getItem(STORAGE_STUDENTS)
-  try {
-    students.value = storedStudents ? JSON.parse(storedStudents) : []
-  } catch {
-    students.value = []
-  }
+  students.value = storedStudents ? JSON.parse(storedStudents) : []
 
   const storedClasses = localStorage.getItem(STORAGE_CLASSES)
-  try {
-    classList.value = storedClasses ? JSON.parse(storedClasses) : []
-  } catch {
-    classList.value = []
-  }
+  classList.value = storedClasses ? JSON.parse(storedClasses) : []
 })
 
-// Handle Filtering logics
-const filteredStudents = computed(() => {
+//  Filter by class
+const filteredByClass = computed(() => {
   if (selectedClass.value === 'all') return students.value
 
   if (selectedClass.value === '11' || selectedClass.value === '12') {
-    const groupName = 'Lớp ' + selectedClass.value
-    const matchingClassNames = classList.value
-      .filter(c => c.grade === groupName)
+    const grade = 'Lớp ' + selectedClass.value
+    const classNames = classList.value
+      .filter(c => c.grade === grade)
       .map(c => c.name)
-    return students.value.filter(s => matchingClassNames.includes(s.class))
+    return students.value.filter(s => classNames.includes(s.class))
   }
 
   return students.value.filter(s => s.class === selectedClass.value)
 })
 
-// Handle Paginating logics
+// Filter by name and age
+function applyLooseFilter() {
+  let result = filteredByClass.value
+
+  const nameTrimmed = searchName.value.trim().toLowerCase()
+  const ageTrimmed = searchAge.value.trim()
+
+  if (nameTrimmed) {
+    result = result.filter(s => s.name.toLowerCase().startsWith(nameTrimmed))
+  }
+
+  if (ageTrimmed) {
+    result = result.filter(s => String(s.age).startsWith(ageTrimmed))
+  }
+
+  filteredStudents.value = result
+}
+
+// Apply exactlt search input
+function applyExactSearch() {
+  const nameTrimmed = searchName.value.trim().toLowerCase()
+  const ageTrimmed = searchAge.value.trim()
+
+  filteredStudents.value = filteredByClass.value.filter(s => {
+    const nameMatch = nameTrimmed ? s.name.toLowerCase() === nameTrimmed : true
+    const ageMatch = ageTrimmed ? s.age === ageTrimmed : true
+    return nameMatch && ageMatch
+  })
+
+  currentPage.value = 1
+}
+
+// Watcher watch filteredByClass to update results when class changes
+watch(filteredByClass, applyLooseFilter, { immediate: true })
+
+// Pagination handle
 const paginatedStudents = computed(() => {
   const start = (currentPage.value - 1) * studentsPerPage
   return filteredStudents.value.slice(start, start + studentsPerPage)
@@ -66,20 +94,31 @@ function goToPage(page) {
   }
 }
 
-// Helpful delete StudentFunction
+// Delete student function
 function deleteStudent(id) {
-  const confirmDelete = confirm('Bạn có chắc chắn muốn xóa học sinh này không?')
-  if (!confirmDelete) return
+  if (!confirm('Bạn có chắc chắn muốn xóa học sinh này không?')) return
 
   students.value = students.value.filter(s => s.id !== id)
   localStorage.setItem(STORAGE_STUDENTS, JSON.stringify(students.value))
   currentPage.value = 1
 }
+
+// Show filtered student list
+function toggleSearch() {
+  showSearch.value = !showSearch.value
+
+  if (!showSearch.value) {
+    searchName.value = ''
+    searchAge.value = ''
+    currentPage.value = 1
+    applyLooseFilter()
+  }
+}
 </script>
 
 <template>
-  <!-- Student List - Base App Interface include tool bar, table and page controller -->
   <div>
+    <!-- Filter Bar -->
     <div class="filter-bar">
       <select v-model="selectedClass" @change="currentPage = 1">
         <option value="all">Tất cả các lớp</option>
@@ -93,8 +132,33 @@ function deleteStudent(id) {
           -- {{ cls.name }}
         </option>
       </select>
+
+      <!-- Search filter toggle button -->
+      <button @click="toggleSearch">
+        {{ showSearch ? 'Đóng Tìm kiếm' : 'Tìm kiếm' }}
+      </button>
     </div>
 
+    <!-- Search Box -->
+    <div v-if="showSearch" class="search-box">
+      <input
+        v-model="searchName"
+        type="text"
+        placeholder="Nhập tên"
+        @input="applyLooseFilter(); currentPage = 1"
+      />
+      <input
+        v-model="searchAge"
+        type="text"
+        placeholder="Nhập tuổi"
+        @input="applyLooseFilter(); currentPage = 1"
+      />
+      <button class="exact-search-btn" @click="applyExactSearch">
+        Tìm kiếm chính xác
+      </button>
+    </div>
+
+    <!-- Student Table -->
     <div class="student-section">
       <button class="add-btn" @click="router.push('/students/add')">Thêm Học Sinh</button>
 
@@ -125,6 +189,7 @@ function deleteStudent(id) {
         </tbody>
       </table>
 
+      <!-- Pagination -->
       <div class="page" v-if="totalPages > 1">
         <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">Trang trước</button>
         <span>Trang {{ currentPage }} / {{ totalPages }}</span>
@@ -136,7 +201,6 @@ function deleteStudent(id) {
 
 <style scoped>
 /* Style for both dark and light mode */
-
 .filter-bar {
   margin: 12px 0;
 }
@@ -145,6 +209,22 @@ function deleteStudent(id) {
   padding: 6px;
   margin-right: 8px;
   border-radius: 4px;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.search-box input {
+  max-width: 20%;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  flex: 1;
 }
 
 .student-section {
