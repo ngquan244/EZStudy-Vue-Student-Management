@@ -21,17 +21,4 @@ const goNext = () => {
   </div>
 </template>
 
-<style scoped>
-.page {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-.page button {
-  padding: 6px 12px;
-  font-size: 14px;
-}
-</style>
-
 <style scoped src="../../styles/student-list.css"></style>

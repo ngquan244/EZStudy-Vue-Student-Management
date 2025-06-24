@@ -1,40 +1,24 @@
-// src/composables/useEditStudent.js
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
+import { student, name, birthDate, selectedClass, classList } from './states'
+import { TODAY } from './constants'
+
+import { loadClassList } from './logicLoadClasses'
+import { loadStudentById } from './logicLoadStudent'
+import { isValidStudentInput } from './logicValidateStudent'
+import { calculateAge } from './logicCalculateAge'
+import { updateStudent } from './logicSaveStudent'
 
 export default function useEditStudent() {
   const route = useRoute()
   const router = useRouter()
-
   const studentId = Number(route.params.id)
-  const student = ref(null)
-
-  const name = ref('')
-  const birthDate = ref('')
-  const selectedClass = ref('')
-  const classList = ref([])
-
-  const today = new Date().toISOString().split('T')[0]
 
   onMounted(() => {
-    // Load class list
-    const classData = localStorage.getItem('ezstudy-classes')
-    try {
-      classList.value = classData ? JSON.parse(classData) : []
-    } catch {
-      classList.value = []
-    }
+    loadClassList(classList)
 
-    // Load student
-    const studentData = localStorage.getItem('ezstudy-students')
-    let students = []
-    try {
-      students = studentData ? JSON.parse(studentData) : []
-    } catch {
-      students = []
-    }
-
-    const found = students.find(s => s.id === studentId)
+    const found = loadStudentById(studentId)
     if (!found) {
       alert('Không tìm thấy học sinh!')
       router.push('/students')
@@ -49,10 +33,9 @@ export default function useEditStudent() {
 
   function save() {
     const trimmedName = name.value.trim()
+    if (!isValidStudentInput(trimmedName, birthDate.value, selectedClass.value, TODAY, birthDate)) return
 
-    if (!isValidStudent(trimmedName, birthDate.value, selectedClass.value)) return
-
-    const updatedStudent = {
+    const updated = {
       ...student.value,
       name: trimmedName,
       birthDate: birthDate.value,
@@ -60,50 +43,8 @@ export default function useEditStudent() {
       class: selectedClass.value
     }
 
-    const students = loadStudents()
-    const index = students.findIndex(s => s.id === studentId)
-
-    if (index !== -1) {
-      students[index] = updatedStudent
-      localStorage.setItem('ezstudy-students', JSON.stringify(students))
-    }
-
+    updateStudent(studentId, updated)
     router.push('/students')
-  }
-
-  function isValidStudent(name, birth, className) {
-    if (!name || !birth || !className) {
-      alert('Vui lòng điền đầy đủ thông tin!')
-      return false
-    }
-
-    if (name.length > 30) {
-      alert('Tên không được vượt quá 30 ký tự!')
-      return false
-    }
-
-    if (birth > today) {
-      alert('Ngày sinh không thể lớn hơn hôm nay.')
-      birthDate.value = ''
-      return false
-    }
-
-    return true
-  }
-
-  function calculateAge(birthDateStr) {
-    const birthYear = new Date(birthDateStr).getFullYear()
-    const currentYear = new Date().getFullYear()
-    return currentYear - birthYear
-  }
-
-  function loadStudents() {
-    const data = localStorage.getItem('ezstudy-students')
-    try {
-      return data ? JSON.parse(data) : []
-    } catch {
-      return []
-    }
   }
 
   function cancel() {
@@ -116,7 +57,7 @@ export default function useEditStudent() {
     birthDate,
     selectedClass,
     classList,
-    today,
+    today: TODAY,
     save,
     cancel
   }
