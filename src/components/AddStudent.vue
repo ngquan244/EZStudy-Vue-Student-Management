@@ -23,11 +23,10 @@ onMounted(() => {
   const stored = localStorage.getItem(STORAGE_KEY)
   try {
     classList.value = stored ? JSON.parse(stored) : []
-    if (classList.value.length > 0) {
-      selectedClass.value = classList.value[0].name
-    }
+    selectedClass.value = 'Chưa phân lớp'
   } catch {
     classList.value = []
+    selectedClass.value = 'Chưa phân lớp'
   }
 })
 
@@ -41,43 +40,64 @@ function calculateAge(birthDateStr) {
 // Save new student function make sure that trimmed name < 30 digits
 function saveStudent() {
   const trimmedName = name.value.trim()
-  if (!trimmedName || !birthDate.value || !selectedClass.value) {
-    alert('Vui lòng điền đầy đủ thông tin!')
-    return
-  }
-  
-  if (trimmedName.length > 30) {
-      alert('Tên không được vượt quá 30 ký tự!')
-      return
-  }
 
-  if (birthDate.value > today) {
-    alert('Ngày sinh không thể lớn hơn hôm nay. Vui lòng nhập lại.')
-    birthDate.value = ''
-    return
-  }
- 
-  const age = calculateAge(birthDate.value)
+  if (!isValidStudentInput(trimmedName, birthDate.value, selectedClass.value)) return
 
-  const newStudent = {
-    id: Date.now(),
-    name: trimmedName,
-    age: age.toString(),
-    birthDate: birthDate.value,
-    class: selectedClass.value
-  }
+  const newStudent = buildNewStudent(trimmedName, birthDate.value, selectedClass.value)
 
-  try {
-    const stored = localStorage.getItem(STUDENT_KEY)
-    const students = stored ? JSON.parse(stored) : []
-    students.push(newStudent)
-    localStorage.setItem(STUDENT_KEY, JSON.stringify(students))
-  } catch {
+  if (!storeNewStudent(newStudent)) {
     alert('Lỗi lưu học sinh!')
+    return
   }
 
   router.push('/students')
 }
+
+// Check valid name and birthdate
+function isValidStudentInput(name, birth, className) {
+  if (!name || !birth || !className) {
+    alert('Vui lòng điền đầy đủ thông tin!')
+    return false
+  }
+
+  if (name.length > 30) {
+    alert('Tên không được vượt quá 30 ký tự!')
+    return false
+  }
+
+  if (birth > today) {
+    alert('Ngày sinh không thể lớn hơn hôm nay. Vui lòng nhập lại.')
+    birthDate.value = ''
+    return false
+  }
+
+  return true
+}
+
+// Return newstudent
+function buildNewStudent(name, birth, className) {
+  return {
+    id: Date.now(),
+    name,
+    birthDate: birth,
+    age: calculateAge(birth).toString(),
+    class: className
+  }
+}
+
+// Store new student
+function storeNewStudent(student) {
+  try {
+    const stored = localStorage.getItem(STUDENT_KEY)
+    const students = stored ? JSON.parse(stored) : []
+    students.push(student)
+    localStorage.setItem(STUDENT_KEY, JSON.stringify(students))
+    return true
+  } catch {
+    return false
+  }
+}
+
 </script>
 
 <template>
@@ -99,6 +119,7 @@ function saveStudent() {
     <div class="form-row">
       <label>Chọn lớp:</label>
       <select v-model="selectedClass">
+        <option value="Chưa phân lớp">Chưa phân lớp</option>
         <option
           v-for="cls in classList"
           :key="cls.name"

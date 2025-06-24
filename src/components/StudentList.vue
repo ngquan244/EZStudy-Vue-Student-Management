@@ -13,11 +13,14 @@ const showSearch = ref(false)
 const searchName = ref('')
 const searchAge = ref('')
 const filteredStudents = ref([])
+const gradeList = ref([])
 
 // Configuration
 const studentsPerPage = 5
 const STORAGE_STUDENTS = 'ezstudy-students'
 const STORAGE_CLASSES = 'ezstudy-classes'
+const GRADE_KEY = 'ezstudy-grades'
+
 
 // Load data
 onMounted(() => {
@@ -26,21 +29,66 @@ onMounted(() => {
 
   const storedClasses = localStorage.getItem(STORAGE_CLASSES)
   classList.value = storedClasses ? JSON.parse(storedClasses) : []
-})
 
-//  Filter by class
-const filteredByClass = computed(() => {
-  if (selectedClass.value === 'all') return students.value
+  const storedGrades = localStorage.getItem(GRADE_KEY)
+  let parsedGrades = []
 
-  if (selectedClass.value === '11' || selectedClass.value === '12') {
-    const grade = 'Lớp ' + selectedClass.value
-    const classNames = classList.value
-      .filter(c => c.grade === grade)
-      .map(c => c.name)
-    return students.value.filter(s => classNames.includes(s.class))
+  try {
+    parsedGrades = storedGrades ? JSON.parse(storedGrades) : []
+  } catch {
+    parsedGrades = []
   }
 
-  return students.value.filter(s => s.class === selectedClass.value)
+  // Default if null or []
+  if (parsedGrades.length === 0) {
+    parsedGrades = ['Lớp 11', 'Lớp 12']
+    localStorage.setItem(GRADE_KEY, JSON.stringify(parsedGrades))
+  }
+
+  // Look for unassigned classes
+  const hasUnassignedGrade = classList.value.some(c => c.grade === 'unassigned')
+
+  gradeList.value = [...parsedGrades]
+
+  if (hasUnassignedGrade && !gradeList.value.includes('Chưa phân khối')) {
+    gradeList.value.push('Chưa phân khối')
+  }
+})
+
+
+// Filter by class
+const filteredByClass = computed(() => {
+  const value = selectedClass.value
+
+  if (value === 'all') return students.value
+  if (value === 'unassigned') {
+    return students.value.filter(s => s.class === 'Chưa phân lớp')
+  }
+
+  // prefix handle
+  const [type, name] = value.split(':')
+
+  if (type === 'class') {
+    return students.value.filter(s => s.class === name)
+  }
+
+  if (type === 'grade') {
+    let classNamesInGrade
+
+    if (name === 'Chưa phân khối') {
+      classNamesInGrade = classList.value
+        .filter(c => c.grade === 'unassigned')
+        .map(c => c.name)
+    } else {
+      classNamesInGrade = classList.value
+        .filter(c => c.grade === name)
+        .map(c => c.name)
+    }
+
+    return students.value.filter(s => classNamesInGrade.includes(s.class))
+  }
+
+  return []
 })
 
 // Filter by name and age
@@ -121,17 +169,25 @@ function toggleSearch() {
     <!-- Filter Bar -->
     <div class="filter-bar">
       <select v-model="selectedClass" @change="currentPage = 1">
-        <option value="all">Tất cả các lớp</option>
-        <option value="11">Lớp 11</option>
-        <option value="12">Lớp 12</option>
-        <option
-          v-for="cls in classList"
-          :key="cls.name"
-          :value="cls.name"
-        >
-          -- {{ cls.name }}
-        </option>
+        <option value="all">-- Tất cả các lớp --</option>
+        <option value="unassigned">-- Chưa phân lớp --</option>
+
+        <template v-for="grade in gradeList" :key="'group-' + grade">
+          <option :value="'grade:' + grade">
+            {{ grade === 'Chưa phân khối' ? 'Chưa phân khối' : grade }}
+          </option>
+          <option
+            v-for="cls in classList.filter(c =>
+              grade === 'Chưa phân khối' ? c.grade === 'unassigned' : c.grade === grade
+            )"
+            :key="'class-' + cls.name"
+            :value="'class:' + cls.name"
+          >
+            ---- {{ cls.name }}
+          </option>
+        </template>
       </select>
+
 
       <!-- Search filter toggle button -->
       <button @click="toggleSearch">

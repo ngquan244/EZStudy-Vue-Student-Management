@@ -61,39 +61,13 @@ onMounted(() => {
 function save() {
   const trimmedName = name.value.trim()
 
-  if (!trimmedName || !birthDate.value || !selectedClass.value) {
-    alert('Vui lòng điền đầy đủ thông tin!')
-    return
-  }
-  
-  if (trimmedName.length > 30) {
-      alert('Tên không được vượt quá 30 ký tự!')
-      return
-  }
+  if (!isValidStudent(trimmedName, birthDate.value, selectedClass.value)) return
 
-  if (birthDate.value > today) {
-    alert('Ngày sinh không thể lớn hơn hôm nay.')
-    birthDate.value = ''
-    return
-  }
+  const updatedStudent = buildUpdatedStudent(trimmedName, birthDate.value, selectedClass.value)
 
-  const updatedStudent = {
-    ...student.value,
-    name: name.value,
-    birthDate: birthDate.value,
-    age: calculateAge(birthDate.value).toString(),
-    class: selectedClass.value
-  }
-
-  const data = localStorage.getItem('ezstudy-students')
-  let students = []
-  try {
-    students = data ? JSON.parse(data) : []
-  } catch {
-    students = []
-  }
-
+  const students = loadStudents()
   const index = students.findIndex(s => s.id === studentId)
+
   if (index !== -1) {
     students[index] = updatedStudent
     localStorage.setItem('ezstudy-students', JSON.stringify(students))
@@ -102,9 +76,49 @@ function save() {
   router.push('/students')
 }
 
-function cancel() {
-  router.push('/students')
+// Check valid name, birdthdate
+function isValidStudent(name, birth, className) {
+  if (!name || !birth || !className) {
+    alert('Vui lòng điền đầy đủ thông tin!')
+    return false
+  }
+
+  if (name.length > 30) {
+    alert('Tên không được vượt quá 30 ký tự!')
+    return false
+  }
+
+  if (birth > today) {
+    alert('Ngày sinh không thể lớn hơn hôm nay.')
+    birthDate.value = ''
+    return false
+  }
+
+  return true
 }
+
+// Return edited student
+function buildUpdatedStudent(name, birth, className) {
+  return {
+    ...student.value,
+    name,
+    birthDate: birth,
+    age: calculateAge(birth).toString(),
+    class: className
+  }
+}
+
+// Load student
+function loadStudents() {
+  const data = localStorage.getItem('ezstudy-students')
+  try {
+    return data ? JSON.parse(data) : []
+  } catch {
+    return []
+  }
+}
+
+
 </script>
 
 <template>
@@ -125,6 +139,7 @@ function cancel() {
     <div class="form-row">
       <label>Chọn lớp:</label>
       <select v-model="selectedClass">
+        <option value="Chưa phân lớp">Chưa phân lớp</option>
         <option v-for="cls in classList" :key="cls.name" :value="cls.name">
           {{ cls.name }}
         </option>
@@ -133,7 +148,7 @@ function cancel() {
 
     <div class="buttons">
       <button @click="save">Lưu</button>
-      <button @click="cancel">Hủy</button>
+      <button @click="router.push('/students')">Hủy</button>
     </div>
   </div>
 </template>

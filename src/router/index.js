@@ -9,6 +9,7 @@ import EditStudent from '../components/EditStudent.vue'
 import ClassManager from '../components/ClassManager.vue'
 import AddClass from '../components/AddClass.vue'
 import EditClass from '../components/EditClass.vue'
+import EditGrade from '../components/EditGrade.vue'
 
 // Routes
 const routes = [
@@ -46,6 +47,12 @@ const routes = [
     path: '/classes/edit/:name',
     name: 'EditClass',
     component: EditClass,
+    props: true
+  },
+  {
+    path: '/grades/edit/:name',
+    name: 'EditGrade',
+    component: EditGrade,
     props: true
   }
 ]
