@@ -42,44 +42,5 @@ function goTo(tab) {
   <router-view />
 </template>
 
-<style scoped>
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  border-bottom: 1px solid #ddd;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  box-sizing: border-box;
-}
-
-.tabs {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  max-width: 100%;
-}
-
-.page-offset {
-  height: 80px;
-}
-
-.title {
-  font-size: 28px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #04AA6D;
-}
-
-button.active {
-  font-weight: bold;
-  border-bottom: 2px solid #04AA6D;
-}
+<style scoped src="./styles/main-app.css">
 </style>

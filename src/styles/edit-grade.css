@@ -1,0 +1,53 @@
+/* Style for both light and dark mode */
+.form-container {
+  max-width: 400px;
+  width: 350px;
+  margin: 0 auto;
+  padding: 20px;
+  background: var(--form-bg);
+  border: 1px solid var(--form-border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-row label {
+  width: 80px;
+  font-weight: bold;
+  color: var(--label-color);
+}
+
+.form-row input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  background-color: var(--form-bg);
+  color: var(--label-color);
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+button:first-of-type {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:first-of-type:hover {
+  filter: brightness(1.1);
+}
