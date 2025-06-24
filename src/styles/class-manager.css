@@ -1,0 +1,39 @@
+/* Style for both light and dark mode */
+.class-manager {
+  margin-top: 16px;
+}
+
+.class-table {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border-color);
+}
+
+.class-table th,
+.class-table td {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  width: 150px;
+  text-align: center;
+  background-color: var(--cell-bg);
+  color: var(--text-color);
+}
+
+.class-table td.class-name {
+  text-align: left;
+  padding-left: 12px;
+}
+
+.class-table th {
+  background-color: var(--header-bg);
+}
+
+.page {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
